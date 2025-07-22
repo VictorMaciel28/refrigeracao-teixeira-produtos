@@ -21,6 +21,7 @@ import Account from './Account'
 import Profile from './Profile'
 import SocialLinks from './SocialLinks'
 import Finish from './Finish'
+import Authors from './Authors'
 import type { TabMenuItem } from '@/types/menu'
 import { useState } from 'react'
 import clsx from 'clsx'
@@ -41,12 +42,18 @@ const wizardSteps: TabMenuItem[] = [
   },
   {
     index: 3,
+    name: 'Autores',
+    icon: 'mdi:account-group',
+    tab: <Authors />,
+  },
+  {
+    index: 4,
     name: 'Social Links',
     icon: 'iconamoon:link-fill',
     tab: <SocialLinks />,
   },
   {
-    index: 4,
+    index: 5,
     name: 'Finish',
     icon: 'iconamoon:check-circle-1-duotone',
     tab: <Finish />,
@@ -70,7 +77,7 @@ const HorizontalWizard = () => {
           <form>
             <div id="horizontalwizard">
               <Tabs
-                onSelect={(e) => setActiveStep(Number(e))}
+                onSelect={(e: any) => setActiveStep(Number(e))}
                 activeKey={activeStep}
                 variant="pills"
                 justify
@@ -144,7 +151,7 @@ const VerticalWizard = () => {
       <CardBody>
         <div className="mb-5">
           <form id="verticalwizard">
-            <TabContainer activeKey={activeStep} onSelect={(e) => setActiveStep(Number(e))}>
+            <TabContainer activeKey={activeStep} onSelect={(e: any) => setActiveStep(Number(e))}>
               <Row>
                 <Col lg={3}>
                   <Nav variant="pills" justify className="nav-justified flex-column icon-wizard form-wizard-header bg-light p-1" role="tablist">

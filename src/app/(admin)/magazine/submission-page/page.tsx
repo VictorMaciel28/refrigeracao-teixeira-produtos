@@ -5,6 +5,7 @@ import { Card, CardBody, Button, Col, Row, Modal, ModalHeader, ModalBody, ModalF
 import PageTitle from '@/components/PageTitle'
 import Image from 'next/image'
 import useToggle from '@/hooks/useToggle'
+import { useRouter } from 'next/navigation'
 
 type Magazine = {
   id: number
@@ -30,6 +31,7 @@ const MagazineSubmissionPage = () => {
   })
 
   const { isTrue: showModal, setFalse: closeModal, setTrue: openModal } = useToggle()
+  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/magazine')
@@ -55,6 +57,8 @@ const MagazineSubmissionPage = () => {
     })
 
     closeModal()
+    // Redireciona para o wizard, passo Autores
+    router.push('/forms/wizard?step=3')
   }
 
   return (
