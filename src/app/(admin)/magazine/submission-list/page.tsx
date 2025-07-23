@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import PageTitle from '@/components/PageTitle'
 import Link from 'next/link'
 
-type Submission = {
+type Article = {
   id: number
   title: string
   keywords: string
@@ -16,17 +16,17 @@ type Submission = {
 }
 
 const SubmissionListPage = () => {
-  const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [articles, setArticles] = useState<Article[]>([])
 
   useEffect(() => {
-    const fetchSubmissions = async () => {
+    const fetchArticles = async () => {
       const res = await fetch('/api/magazine/submission', { cache: 'no-store' })
       if (!res.ok) return
       const data = await res.json()
-      setSubmissions(data)
+      setArticles(data)
     }
 
-    fetchSubmissions()
+    fetchArticles()
   }, [])
 
   const basePath = '/uploads/submissions'
@@ -48,24 +48,24 @@ const SubmissionListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {submissions.map((sub) => (
-              <tr key={sub.id}>
-                <td>{sub.id}</td>
-                <td>{sub.title}</td>
-                <td>{sub.keywords}</td>
-                <td>{sub.articleType}</td>
+            {articles.map((article) => (
+              <tr key={article.id}>
+                <td>{article.id}</td>
+                <td>{article.title}</td>
+                <td>{article.keywords}</td>
+                <td>{article.articleType}</td>
                 <td>
-                  <a href={`${basePath}/${sub.wordFile}`} download>
+                  <a href={`${basePath}/${article.wordFile}`} download>
                     <Button size="sm" variant="secondary">Baixar</Button>
                   </a>
                 </td>
                 <td>
-                  <a href={`${basePath}/${sub.committeeLetterFile}`} target="_blank">
+                  <a href={`${basePath}/${article.committeeLetterFile}`} target="_blank">
                     <Button size="sm" variant="info">Visualizar</Button>
                   </a>
                 </td>
                 <td>
-                  <a href={`${basePath}/${sub.graphicalAbstractFile}`} target="_blank">
+                  <a href={`${basePath}/${article.graphicalAbstractFile}`} target="_blank">
                     <Button size="sm" variant="info">Visualizar</Button>
                   </a>
                 </td>

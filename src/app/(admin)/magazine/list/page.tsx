@@ -1,6 +1,10 @@
+"use client"
+
 import ComponentContainerCard from '@/components/ComponentContainerCard'
 import PageTitle from '@/components/PageTitle'
 import { Table, Button } from 'react-bootstrap'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 type Magazine = {
   id: number
@@ -11,29 +15,44 @@ type Magazine = {
   updatedAt: string
 }
 
-const fetchMagazines = async (): Promise<Magazine[]> => {
-  const res = await fetch('http://localhost:3000/api/magazine', {
-    cache: 'no-store',
-  })
-  if (!res.ok) throw new Error('Erro ao buscar revistas')
-  return res.json()
-}
+const MagazineListPage = () => {
+  const [magazines, setMagazines] = useState<Magazine[]>([])
+  const [error, setError] = useState("")
+  const router = useRouter()
 
-const MagazineListPage = async () => {
-  const magazines = await fetchMagazines()
+  useEffect(() => {
+    const fetchMagazines = async () => {
+      try {
+        const res = await fetch('/api/magazine', { cache: 'no-store' })
+        if (!res.ok) throw new Error('Erro ao buscar revistas')
+        const data = await res.json()
+        setMagazines(data)
+      } catch (err) {
+        setError('Erro ao buscar revistas')
+      }
+    }
+    fetchMagazines()
+  }, [])
+
+  const handleEdit = (id: number) => {
+    router.push(`/magazine/form?id=${id}`)
+  }
+
+  const handleRemove = async (id: number) => {
+    if (!confirm('Tem certeza que deseja remover esta revista?')) return
+    const res = await fetch(`/api/magazine/${id}`, { method: 'DELETE' })
+    if (res.ok) {
+      setMagazines(magazines.filter(m => m.id !== id))
+    } else {
+      setError('Erro ao remover revista.')
+    }
+  }
 
   return (
     <>
       <PageTitle title="Revistas Cadastradas" subName="Admin" />
-
-      <ComponentContainerCard
-        id="magazine-list"
-        title="Lista"
-        description={
-          <>
-            {/* Use <code>.table-striped</code> para aplicar zebra-striping no <code>&lt;tbody&gt;</code>. */}
-          </>
-        }>
+      <ComponentContainerCard id="magazine-list" title="Lista" description={<> </>}>
+        {error && <div className="alert alert-danger mt-2">{error}</div>}
         <div className="table-responsive">
           <Table striped className="table-centered align-middle">
             <thead>
@@ -53,10 +72,10 @@ const MagazineListPage = async () => {
                   <td>{new Date(item.publishDate).toLocaleDateString()}</td>
                   <td>{item.status}</td>
                   <td className="d-flex gap-2">
-                    <Button size="sm" variant="primary">
+                    <Button size="sm" variant="primary" onClick={() => handleEdit(item.id)}>
                       Editar
                     </Button>
-                    <Button size="sm" variant="danger">
+                    <Button size="sm" variant="danger" onClick={() => handleRemove(item.id)}>
                       Remover
                     </Button>
                   </td>

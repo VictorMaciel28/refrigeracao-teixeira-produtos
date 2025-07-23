@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const submissions = await prisma.submission.findMany({
+    const articles = await prisma.article.findMany({
       include: {
         magazine: {
           select: {
@@ -16,9 +16,9 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json(submissions)
+    return NextResponse.json(articles)
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao buscar submissões' }, { status: 500 })
+    return NextResponse.json({ error: 'Erro ao buscar artigos' }, { status: 500 })
   }
 }
 
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const letterFilename = await saveFile(committeeLetterFile)
   const abstractFilename = await saveFile(graphicalAbstractFile)
 
-  const submission = await prisma.submission.create({
+  const article = await prisma.article.create({
     data: {
       articleType,
       title,
@@ -68,5 +68,5 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  return NextResponse.json(submission, { status: 201 })
+  return NextResponse.json(article, { status: 201 })
 }
