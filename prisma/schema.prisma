@@ -359,10 +359,10 @@ model Magazine {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  submissions Submission[]
+  articles     Article[]
 }
 
-model Submission {
+model Article {
   id             Int      @id @default(autoincrement())
   articleType    String
   title          String
@@ -371,7 +371,18 @@ model Submission {
   wordFile       String
   committeeLetterFile String
   graphicalAbstractFile String
+  pdfAuthorizationFile String?
   magazineId     Int
   magazine       Magazine @relation(fields: [magazineId], references: [id])
+  authors        Author[]
   createdAt      DateTime @default(now())
+}
+
+model Author {
+  id        Int    @id @default(autoincrement())
+  nome      String
+  email     String
+  instagram String?
+  articleId Int
+  article   Article @relation(fields: [articleId], references: [id])
 }

@@ -21,10 +21,12 @@ import Account from './Account'
 import Profile from './Profile'
 import SocialLinks from './SocialLinks'
 import Finish from './Finish'
+import Authors from './Authors'
 import type { TabMenuItem } from '@/types/menu'
 import { useState } from 'react'
 import clsx from 'clsx'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const wizardSteps: TabMenuItem[] = [
   {
@@ -41,19 +43,29 @@ const wizardSteps: TabMenuItem[] = [
   },
   {
     index: 3,
+    name: 'Autores',
+    icon: 'mdi:account-group',
+    tab: <Authors />,
+  },
+  {
+    index: 4,
     name: 'Social Links',
     icon: 'iconamoon:link-fill',
     tab: <SocialLinks />,
   },
-  {
-    index: 4,
-    name: 'Finish',
-    icon: 'iconamoon:check-circle-1-duotone',
-    tab: <Finish />,
-  },
+  // Remover Finish daqui, será renderizado manualmente
 ]
 const HorizontalWizard = () => {
   const [activeStep, setActiveStep] = useState<number>(1)
+  const [finishSubmitted, setFinishSubmitted] = useState(false)
+  const router = useRouter()
+
+  const handleFinish = () => {
+    setFinishSubmitted(true)
+    setTimeout(() => {
+      router.push('/magazine/submission-list')
+    }, 1200)
+  }
 
   return (
     <Card>
@@ -70,7 +82,7 @@ const HorizontalWizard = () => {
           <form>
             <div id="horizontalwizard">
               <Tabs
-                onSelect={(e) => setActiveStep(Number(e))}
+                onSelect={(e: any) => setActiveStep(Number(e))}
                 activeKey={activeStep}
                 variant="pills"
                 justify
@@ -90,6 +102,20 @@ const HorizontalWizard = () => {
                     <>{step.tab}</>
                   </Tab>
                 ))}
+                <Tab
+                  key={5}
+                  as={'span'}
+                  className="rounded-0 py-2"
+                  eventKey={5}
+                  title={
+                    <>
+                      <IconifyIcon icon="iconamoon:check-circle-1-duotone" className="fs-26" />
+                      Finish
+                    </>
+                  }
+                >
+                  <Finish submitted={finishSubmitted} />
+                </Tab>
               </Tabs>
               <div className="d-flex flex-wrap align-items-center wizard justify-content-between gap-3 mt-3">
                 <div className="first">
@@ -108,14 +134,19 @@ const HorizontalWizard = () => {
                     <Button
                       variant="primary"
                       onClick={() => setActiveStep(() => activeStep + 1)}
-                      className={clsx({ disabled: wizardSteps.length === activeStep })}>
+                      className={clsx({ disabled: activeStep === wizardSteps.length + 1 })}>
                       Next Step
                       <IconifyIcon icon="bx:right-arrow-alt" className="ms-2" />
                     </Button>
                   </div>
                 </div>
                 <div className="last">
-                  <Button variant="soft-primary" onClick={() => setActiveStep(wizardSteps.length)}>
+                  <Button variant="soft-primary" onClick={() => {
+                    if (activeStep !== wizardSteps.length + 1) {
+                      setActiveStep(wizardSteps.length + 1)
+                    }
+                    handleFinish()
+                  }}>
                     Finish
                   </Button>
                 </div>
@@ -144,7 +175,7 @@ const VerticalWizard = () => {
       <CardBody>
         <div className="mb-5">
           <form id="verticalwizard">
-            <TabContainer activeKey={activeStep} onSelect={(e) => setActiveStep(Number(e))}>
+            <TabContainer activeKey={activeStep} onSelect={(e: any) => setActiveStep(Number(e))}>
               <Row>
                 <Col lg={3}>
                   <Nav variant="pills" justify className="nav-justified flex-column icon-wizard form-wizard-header bg-light p-1" role="tablist">
@@ -185,7 +216,7 @@ const VerticalWizard = () => {
                           <Button
                             variant="primary"
                             onClick={() => setActiveStep(() => activeStep + 1)}
-                            className={clsx({ disabled: wizardSteps.length === activeStep })}>
+                            className={clsx({ disabled: activeStep === wizardSteps.length + 1 })}>
                             Next Step
                             <IconifyIcon icon="bx:right-arrow-alt" className="ms-2" />
                           </Button>

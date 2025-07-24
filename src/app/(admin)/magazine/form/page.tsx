@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Form, Button, Row, Col, FormLabel, FormControl, FormSelect } from 'react-bootstrap'
+import { Form, Button, Row, Col, FormLabel, FormControl, FormSelect, Alert } from 'react-bootstrap'
 import ComponentContainerCard from '@/components/ComponentContainerCard'
 import PageTitle from '@/components/PageTitle'
 import DropzoneFormInput from '@/components/from/DropzoneFormInput'
@@ -17,6 +17,8 @@ const MagazinePage = () => {
   })
 
   const router = useRouter()
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,7 +35,12 @@ const MagazinePage = () => {
       body: formData,
     })
 
-    if (res.ok) router.refresh()
+    if (res.ok) {
+      setSuccess(true)
+      setTimeout(() => router.push('/magazine/list'), 1500)
+    } else {
+      setError('Erro ao criar revista. Tente novamente.')
+    }
   }
 
   return (
@@ -106,6 +113,8 @@ const MagazinePage = () => {
             Criar Revista
           </Button>
         </Form>
+        {success && <Alert variant="success" className="mt-3">Revista criada com sucesso! Redirecionando...</Alert>}
+        {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
       </ComponentContainerCard>
     </>
   )
