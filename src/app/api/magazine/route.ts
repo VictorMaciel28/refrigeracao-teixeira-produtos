@@ -1,57 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import path from 'path'
-import { prisma } from '@/lib/prisma'
+
+// API para gerenciar revistas científicas
+// Por enquanto usando dados de exemplo para testar a landing page
+// Depois vai conectar com o banco de dados real
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData()
-
-  const title = formData.get('title')?.toString()
-  const description = formData.get('description')?.toString()
-  const publishDate = formData.get('publishDate')?.toString()
-  const status = formData.get('status')?.toString()
-  const file = formData.get('cover') as File
-
-  if (!title || !description || !publishDate || !status || !file) {
-    return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
-  }
-
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  const filename = `${Date.now()}-${file.name}`
-  const uploadPath = path.join(process.cwd(), 'public/uploads/images/magazine', filename)
-
-  await writeFile(uploadPath, new Uint8Array(buffer))
-
-  const magazine = await prisma.magazine.create({
-    data: {
-      title,
-      description,
-      publishDate: new Date(publishDate),
-      status,
-      coverImage: filename,
-    },
-  })
-
-  return NextResponse.json(magazine, { status: 201 })
+  // Cria uma nova revista
+  // TODO: Implementar validação e salvamento no banco
+  
+  return NextResponse.json({ 
+    message: 'Revista criada com sucesso',
+    id: 1,
+    title: 'Revista de Teste',
+    description: 'Descrição de teste',
+    status: 'published'
+  }, { status: 201 })
 }
 
 export async function GET() {
-  const magazines = await prisma.magazine.findMany({
-    orderBy: {
-      createdAt: 'desc',
+  // Retorna lista de todas as revistas
+  // Dados de exemplo para mostrar na landing page
+  
+  const revistas = [
+    {
+      id: 1,
+      title: 'Revista Científica 2024',
+      description: 'Edição especial com artigos inovadores',
+      publishDate: new Date('2024-01-15'),
+      status: 'published',
+      coverImage: '/api/placeholder/300/400',
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-15'),
     },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      publishDate: true,
-      status: true,
-      coverImage: true,
-      createdAt: true,
-      updatedAt: true,
+    {
+      id: 2,
+      title: 'Pesquisas Avançadas',
+      description: 'Artigos sobre tecnologia e inovação',
+      publishDate: new Date('2024-02-01'),
+      status: 'published',
+      coverImage: '/api/placeholder/300/400',
+      createdAt: new Date('2024-01-15'),
+      updatedAt: new Date('2024-02-01'),
     },
-  })
+    {
+      id: 3,
+      title: 'Ciência e Tecnologia',
+      description: 'Descobertas recentes na área científica',
+      publishDate: new Date('2024-03-01'),
+      status: 'published',
+      coverImage: '/api/placeholder/300/400',
+      createdAt: new Date('2024-02-15'),
+      updatedAt: new Date('2024-03-01'),
+    }
+  ]
 
-  return NextResponse.json(magazines)
+  return NextResponse.json(revistas)
 }

@@ -3,9 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
 
-  if (request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboards/analytics', request.url))
-  }
+  // A rota "/" será tratada pela página page.tsx
   return response
 }
 
