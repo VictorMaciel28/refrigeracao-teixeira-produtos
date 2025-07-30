@@ -1,58 +1,75 @@
+import { writeFile, mkdir } from 'fs/promises'
+import path from 'path'
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 // API para gerenciar submissões de artigos
-// Dados de exemplo para testar a funcionalidade na landing page
-// Quando estiver pronto, vai integrar com o banco de dados
+// Conecta com o banco de dados real
 
 export async function GET() {
-  // Lista todos os artigos submetidos
-  // Por enquanto retorna dados de teste
-  
-  const artigos = [
-    {
-      id: 1,
-      articleType: 'Artigo Original',
-      title: 'Descobertas em Tecnologia Avançada',
-      abstract: 'Este artigo apresenta descobertas inovadoras na área de tecnologia...',
-      keywords: 'tecnologia, inovação, pesquisa',
-      magazineId: 1,
-      magazine: {
-        title: 'Revista Científica 2024'
+  try {
+    const articles = await prisma.article.findMany({
+      include: {
+        magazine: {
+          select: {
+            title: true,
+          },
+        },
       },
-      createdAt: new Date('2024-01-15'),
-      wordFile: 'artigo1.docx',
-      committeeLetterFile: 'carta1.pdf',
-      graphicalAbstractFile: 'abstract1.png'
-    },
-    {
-      id: 2,
-      articleType: 'Revisão',
-      title: 'Análise de Tendências Científicas',
-      abstract: 'Uma análise abrangente das tendências atuais na ciência...',
-      keywords: 'tendências, ciência, análise',
-      magazineId: 2,
-      magazine: {
-        title: 'Pesquisas Avançadas'
-      },
-      createdAt: new Date('2024-02-01'),
-      wordFile: 'artigo2.docx',
-      committeeLetterFile: 'carta2.pdf',
-      graphicalAbstractFile: 'abstract2.png'
-    }
-  ]
+      orderBy: { createdAt: 'desc' },
+    })
 
-  return NextResponse.json(artigos)
+    return NextResponse.json(articles)
+  } catch (error) {
+    return NextResponse.json({ error: 'Erro ao buscar artigos' }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {
-  // Submete um novo artigo
-  // TODO: Validar dados, salvar arquivos e registrar no banco
-  
-  return NextResponse.json({ 
-    message: 'Artigo submetido com sucesso',
-    id: 1,
-    title: 'Artigo de Teste',
-    articleType: 'Artigo Original',
-    status: 'submitted'
-  }, { status: 201 })
+  const formData = await req.formData()
+
+  const articleType = formData.get('articleType')?.toString()
+  const title = formData.get('title')?.toString()
+  const abstract = formData.get('abstract')?.toString()
+  const keywords = formData.get('keywords')?.toString()
+  const magazineId = parseInt(formData.get('magazineId')?.toString() || '0', 10)
+
+  const wordFile = formData.get('wordFile') as File | null
+  const committeeLetterFile = formData.get('committeeLetterFile') as File | null
+  const graphicalAbstractFile = formData.get('graphicalAbstractFile') as File | null
+
+  if (!articleType || !title || !abstract || !keywords || !magazineId || !wordFile || !committeeLetterFile || !graphicalAbstractFile) {
+    return NextResponse.json({ error: 'Dados incompletos' }, { status: 400 })
+  }
+
+  const folder = path.join(process.cwd(), 'public/uploads/submissions')
+  await mkdir(folder, { recursive: true })
+
+  const saveFile = async (file: File) => {
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '_')}`
+    const filePath = path.join(folder, filename)
+    await writeFile(filePath, new Uint8Array(buffer))
+    return filename
+  }
+
+  const wordFilename = await saveFile(wordFile)
+  const letterFilename = await saveFile(committeeLetterFile)
+  const abstractFilename = await saveFile(graphicalAbstractFile)
+
+  const article = await prisma.article.create({
+    data: {
+      articleType,
+      title,
+      abstract,
+      keywords,
+      magazineId,
+      wordFile: wordFilename,
+      committeeLetterFile: letterFilename,
+      graphicalAbstractFile: abstractFilename,
+    },
+  })
+
+  return NextResponse.json(article, { status: 201 })
 }
