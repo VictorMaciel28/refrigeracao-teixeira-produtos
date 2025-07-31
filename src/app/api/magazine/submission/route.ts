@@ -3,6 +3,9 @@ import path from 'path'
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// API para gerenciar submissões de artigos
+// Conecta com o banco de dados real
+
 export async function GET() {
   try {
     const articles = await prisma.article.findMany({

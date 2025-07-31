@@ -3,6 +3,9 @@ import { writeFile } from 'fs/promises'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
 
+// API para gerenciar revistas científicas
+// Conecta com o banco de dados real
+
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
 
