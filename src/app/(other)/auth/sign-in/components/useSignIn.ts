@@ -39,8 +39,8 @@ const useSignIn = () => {
       password: values?.password,
     }).then((res) => {
       if (res?.ok) {
-        push(queryParams['redirectTo'] ?? '/dashboards/analytics')
-        //push(queryParams['redirectTo'] ?? '/tables/basic')
+        // Redireciona para a página de editais abertos após login bem-sucedido
+        push(queryParams['redirectTo'] ?? '/magazine/submission-page')
         
         showNotification({ message: 'Successfully logged in. Redirecting....', variant: 'success' })
       } else {
