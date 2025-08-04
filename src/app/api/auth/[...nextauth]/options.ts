@@ -88,7 +88,8 @@ export const options: NextAuthOptions = {
       return token;
     },
     redirect({ baseUrl }) {
-      return `${baseUrl}/dashboards/analytics`;
+      // Redireciona para a página de editais abertos após o login
+      return `${baseUrl}/magazine/submission-page`;
     }
   },
 

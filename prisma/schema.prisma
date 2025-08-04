@@ -172,6 +172,7 @@ model publications {
   name          String    @db.VarChar(1024)
   participants  String?   @db.VarChar(2048)
   isbn          String    @db.VarChar(17)
+  code_ebook    String?   @db.VarChar(14)
   photo         Bytes?
   pdf           Bytes?
   filesName     String?   @db.VarChar(255)
@@ -208,16 +209,17 @@ model refs {
 }
 
 model request {
-  id           String   @id @db.VarChar(50)
-  id_depositor Int
-  title        String   @db.VarChar(255)
-  company      String   @db.VarChar(200)
-  edition      Int
-  isbn         String?  @db.VarChar(70)
-  link         String   @db.VarChar(70)
-  abstract     String   @db.TinyText
-  created_at   DateTime @db.DateTime(0)
-  status       Int
+  id             String   @id @db.VarChar(50)
+  id_depositor   Int
+  id_publication Int?
+  title          String   @db.VarChar(255)
+  company        String   @db.VarChar(200)
+  edition        Int
+  isbn           String?  @db.VarChar(70)
+  link           String   @db.VarChar(70)
+  abstract       String   @db.TinyText
+  created_at     DateTime @db.DateTime(0)
+  status         Int
 }
 
 model request_chapter {
@@ -350,39 +352,30 @@ model wp_users {
 }
 
 model Magazine {
-  id           Int      @id @default(autoincrement())
-  title        String
-  description  String
-  publishDate  DateTime
-  status       String
-  coverImage   String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  articles     Article[]
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  publishDate DateTime
+  status      String
+  coverImage  String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  Submission  Submission[]
 }
 
-model Article {
-  id             Int      @id @default(autoincrement())
-  articleType    String
-  title          String
-  abstract       String
-  keywords       String
-  wordFile       String
-  committeeLetterFile String
+model Submission {
+  id                    Int      @id @default(autoincrement())
+  articleType           String
+  title                 String
+  abstract              String
+  keywords              String
+  wordFile              String
+  committeeLetterFile   String
   graphicalAbstractFile String
-  pdfAuthorizationFile String?
-  magazineId     Int
-  magazine       Magazine @relation(fields: [magazineId], references: [id])
-  authors        Author[]
-  createdAt      DateTime @default(now())
-}
+  magazineId            Int      @default(1)
+  userId                Int      @default(1)
+  createdAt             DateTime @default(now())
+  Magazine              Magazine @relation(fields: [magazineId], references: [id])
 
-model Author {
-  id        Int    @id @default(autoincrement())
-  nome      String
-  email     String
-  instagram String?
-  articleId Int
-  article   Article @relation(fields: [articleId], references: [id])
+  @@index([magazineId], map: "Submission_magazineId_fkey")
 }
