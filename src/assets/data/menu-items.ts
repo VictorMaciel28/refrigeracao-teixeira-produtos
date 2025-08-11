@@ -1,65 +1,65 @@
 import { MenuItemType } from '@/types/menu'
 
 export const MENU_ITEMS: MenuItemType[] = [
-  {
-    key: 'menu',
-    label: 'MENU',
-    isTitle: true,
-  },
+  // {
+  //   key: 'menu',
+  //   label: 'MENU',
+  //   isTitle: true,
+  // },
   {
     key: 'custom',
-    label: 'ADMINISTRAÇÃO',
+    label: 'Menu',
     isTitle: true,
   },
   {
     key: 'magazine',
-    label: 'Revistas',
+    label: 'Produtos',
     icon: 'ri:survey-line',
     children: [
       {
         key: 'basic',
-        label: 'Listar revistas',
-        url: '/magazine/list',
+        label: 'Listar produtos',
+        url: '/produtos',
         parentKey: 'magazine',
-      },
-      {
-        key: 'basic',
-        label: 'Nova revista',
-        url: '/magazine/form',
-        parentKey: 'magazine',
-      },
-      {
-        key: 'basic',
-        label: 'Submissões',
-        url: '/magazine/submission-list',
-        parentKey: 'magazine',
-      },
+      }
+      // {
+      //   key: 'basic',
+      //   label: 'Nova revista',
+      //   url: '/magazine/form',
+      //   parentKey: 'magazine',
+      // },
+      // {
+      //   key: 'basic',
+      //   label: 'Submissões',
+      //   url: '/magazine/submission-list',
+      //   parentKey: 'magazine',
+      // },
     ]
-  },
-  {
-    key: 'custom',
-    label: 'USUÁRIOS',
-    isTitle: true,
-  },
-  {
-    key: 'user-magazine',
-    label: 'Revistas',
-    icon: 'ri:survey-line',
-    children: [
-      {
-        key: 'basic',
-        label: 'Editais abertos',
-        url: '/magazine/submission-page',
-        parentKey: 'user-magazine',
-      },
-      {
-        key: 'basic',
-        label: 'Minhas submissões',
-        url: '/magazine/submission-list',
-        parentKey: 'user-magazine',
-      },
-    ]
-  },
+  }
+  // {
+  //   key: 'custom',
+  //   label: 'USUÁRIOS',
+  //   isTitle: true,
+  // },
+  // {
+  //   key: 'user-magazine',
+  //   label: 'Revistas',
+  //   icon: 'ri:survey-line',
+  //   children: [
+  //     {
+  //       key: 'basic',
+  //       label: 'Editais abertos',
+  //       url: '/magazine/submission-page',
+  //       parentKey: 'user-magazine',
+  //     },
+  //     {
+  //       key: 'basic',
+  //       label: 'Minhas submissões',
+  //       url: '/magazine/submission-list',
+  //       parentKey: 'user-magazine',
+  //     },
+  //   ]
+  // },
   // {
   //   key: 'dashboards',
   //   label: 'Dashboards',
