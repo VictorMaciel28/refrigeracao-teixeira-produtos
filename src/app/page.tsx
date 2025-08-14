@@ -1,208 +1,158 @@
+"use client";
+
 import LandingHeader from '@/components/layout/LandingHeader'
 import { Container, Row, Col } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
+import CategoriasMenu from '@/components/CategoriasMenu'
 
+
+
+import { useRouter } from "next/navigation";
 // Componente principal da landing page
 function LandingPage() {
   // Ano atual para o footer
   const currentYear = new Date().getFullYear()
+  
+  // Estados para produtos
+  const [produtos, setProdutos] = useState([]);
+  const [busca, setBusca] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  // Função para carregar produtos
+  useEffect(() => {
+    // router.push("/produtos");
+    async function carregarProdutos() {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/produtos?q=${encodeURIComponent(busca)}`);
+        const data = await response.json();
+        if (data.retorno?.produtos) {
+          setProdutos(data.retorno.produtos);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    carregarProdutos();
+  }, [busca]);
+
+  // Função para lidar com seleção de categoria
+  const handleCategoriaSelect = (categoria: string) => {
+    setBusca(categoria);
+  };
 
   return (
     // Div principal com classe CSS personalizada
     <div className="landing-page">
       {/* Cabeçalho da página */}
-      <LandingHeader />
+      {/* <LandingHeader /> */}
       
-      {/* Seção principal */}
-      <section className="hero-section">
+      {/* Logo da Refrigeração Teixeira */}
+      <section className="logo-section py-4 bg-white">
         <Container>
-          <Row className="align-items-center min-vh-75">
-            <Col lg={6} className="mb-5 mb-lg-0">
-              {/* Conteúdo textual da esquerda */}
-              <div className="hero-content">
-                <h1 className="hero-title mb-4">
-                  Sistema de Revistas
-                  <span className="text-primary"> Científicas</span>
-                </h1>
-                <p className="hero-description mb-4">
-                  Acesse o acervo completo de revistas científicas da Editora Pasteur. 
-                  Pesquise, leia e baixe artigos acadêmicos de qualidade com facilidade.
+          <Row className="justify-content-center">
+            <Col className="text-center">
+              <div className="company-logo">
+                <h1 className="company-name text-warning mb-2">Refrigeração Teixeira</h1>
+                <p className="company-tagline text-muted mb-0">
+                  Especialistas em refrigeração e acessórios
                 </p>
-                
-                {/* Estatísticas rápidas */}
-                <div className="hero-stats mb-4">
-                  <Row>
-                    <Col xs={4} className="text-center">
-                      <div className="stat-item">
-                        <h3 className="stat-number">500+</h3>
-                        <p className="stat-label">Artigos</p>
-                      </div>
-                    </Col>
-                    <Col xs={4} className="text-center">
-                      <div className="stat-item">
-                        <h3 className="stat-number">50+</h3>
-                        <p className="stat-label">Revistas</p>
-                      </div>
-                    </Col>
-                    <Col xs={4} className="text-center">
-                      <div className="stat-item">
-                        <h3 className="stat-number">1000+</h3>
-                        <p className="stat-label">Autores</p>
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-                
-                {/* Botões de ação */}
-                <div className="hero-buttons">
-                  <a 
-                    href="/dashboards/analytics" 
-                    className="btn btn-primary btn-lg me-3 mb-2"
-                  >
-                    <i className="fas fa-search me-2"></i>
-                    Pesquisar Artigos
-                  </a>
-                  <a 
-                    href="/auth/sign-up" 
-                    className="btn btn-outline-primary btn-lg mb-2"
-                  >
-                    <i className="fas fa-user-plus me-2"></i>
-                    Criar Conta
-                  </a>
-                </div>
-              </div>
-            </Col>
-            
-            <Col lg={6}>
-              <div className="hero-image-placeholder">
-                <div className="placeholder-content">
-                  <i className="fas fa-book-open fa-5x text-primary mb-3"></i>
-                  <h3 className="text-muted">Sistema de Revistas</h3>
-                  <p className="text-muted">Editora Pasteur</p>
-                </div>
               </div>
             </Col>
           </Row>
         </Container>
       </section>
 
-      {/* Seção de Recursos */}
-      <section className="features-section py-5">
+      {/* Menu de Categorias */}
+      <CategoriasMenu onCategoriaSelect={handleCategoriaSelect} />
+      
+      {/* Seção de Produtos */}
+      <section className="products-section py-5 bg-dark text-white">
         <Container>
-          <Row className="justify-content-center mb-5">
-            <Col lg={8} className="text-center">
-              <h2 className="section-title mb-3">Por que escolher nosso sistema?</h2>
-              <p className="section-subtitle">
-                Ferramentas avançadas para pesquisa e acesso a conteúdo científico de qualidade
-              </p>
+          
+          
+          {/* Campo de busca */}
+          <Row className="justify-content-center mb-4">
+            <Col lg={6} md={8}>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Buscar produtos..."
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  className="form-control form-control-lg"
+                />
+                {loading && (
+                  <div className="text-center mt-3">
+                    <div className="spinner-border text-light" role="status">
+                      <span className="visually-hidden">Carregando...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </Col>
           </Row>
           
+          {/* Lista de produtos */}
           <Row>
-            <Col lg={4} md={6} className="mb-4">
-              <div className="feature-card h-100 border-0 shadow-sm">
-                <div className="feature-card-body text-center p-4">
-                  <div className="feature-icon mb-3">
-                    <i className="fas fa-search fa-3x text-primary"></i>
+            {produtos.length > 0 ? (
+              produtos.map((produto: any, index: number) => (
+                <Col lg={4} md={6} className="mb-4" key={index}>
+                  <div className="product-card h-100 border-0 shadow-sm bg-light">
+                    <div className="product-card-body p-4">
+                      <h5 className="product-title mb-3 text-primary">
+                        <a 
+                          href={`/produtos/${produto.produto.id}`}
+                          className="text-decoration-none"
+                        >
+                          {produto.produto.nome}
+                        </a>
+                      </h5>
+                      <div className="product-details">
+                        <p className="product-price mb-2 text-dark">
+                          <strong>Preço: R$ {Number(produto.produto.preco).toFixed(2) || "0,00"}</strong>
+                        </p>
+                        <p className="product-stock mb-0">
+                          <small className="text-muted">
+                            Estoque: {produto.produto.estoqueAtual || 0} unidades
+                          </small>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <h5 className="feature-title mb-3">Pesquisa Avançada</h5>
-                  <p className="feature-description">
-                    Encontre artigos por título, autor, palavras-chave ou área de conhecimento com nossa ferramenta de busca inteligente.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            
-            <Col lg={4} md={6} className="mb-4">
-              <div className="feature-card h-100 border-0 shadow-sm">
-                <div className="feature-card-body text-center p-4">
-                  <div className="feature-icon mb-3">
-                    <i className="fas fa-download fa-3x text-primary"></i>
-                  </div>
-                  <h5 className="feature-title mb-3">Acesso aos Artigos</h5>
-                  <p className="feature-description">
-                    Acesse artigos científicos da Editora Pasteur através de nossa plataforma digital.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            
-            <Col lg={4} md={6} className="mb-4">
-              <div className="feature-card h-100 border-0 shadow-sm">
-                <div className="feature-card-body text-center p-4">
-                  <div className="feature-icon mb-3">
-                    <i className="fas fa-mobile-alt fa-3x text-primary"></i>
-                  </div>
-                  <h5 className="feature-title mb-3">Acesso Mobile</h5>
-                  <p className="feature-description">
-                    Pesquise e leia artigos em qualquer dispositivo. Interface responsiva que se adapta a smartphones e tablets.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            
-            <Col lg={4} md={6} className="mb-4">
-              <div className="feature-card h-100 border-0 shadow-sm">
-                <div className="feature-card-body text-center p-4">
-                  <div className="feature-icon mb-3">
-                    <i className="fas fa-book fa-3x text-primary"></i>
-                  </div>
-                  <h5 className="feature-title mb-3">Revistas Científicas</h5>
-                  <p className="feature-description">
-                    Acesse as revistas científicas da Editora Pasteur em uma única plataforma.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            
-            <Col lg={4} md={6} className="mb-4">
-              <div className="feature-card h-100 border-0 shadow-sm">
-                <div className="feature-card-body text-center p-4">
-                  <div className="feature-icon mb-3">
-                    <i className="fas fa-chart-line fa-3x text-primary"></i>
-                  </div>
-                  <h5 className="feature-title mb-3">Estatísticas</h5>
-                  <p className="feature-description">
-                    Visualize estatísticas de acesso e informações sobre os artigos publicados.
-                  </p>
-                </div>
-              </div>
-            </Col>
-            
-            <Col lg={4} md={6} className="mb-4">
-              <div className="feature-card h-100 border-0 shadow-sm">
-                <div className="feature-card-body text-center p-4">
-                  <div className="feature-icon mb-3">
-                    <i className="fas fa-users fa-3x text-primary"></i>
-                  </div>
-                  <h5 className="feature-title mb-3">Gestão de Usuários</h5>
-                  <p className="feature-description">
-                    Sistema de gestão de usuários para administradores e pesquisadores.
-                  </p>
-                </div>
-              </div>
-            </Col>
+                </Col>
+              ))
+            ) : (
+              <Col className="text-center">
+                <p className="text-muted">
+                  {loading ? "Carregando produtos..." : "Nenhum produto encontrado."}
+                </p>
+              </Col>
+            )}
           </Row>
         </Container>
       </section>
 
       {/* Seção CTA (Call to Action) */}
-      <section className="cta-section py-5">
+      <section className="cta-section py-5 bg-warning">
         <Container>
           <Row className="justify-content-center">
             <Col lg={8} className="text-center">
               <div className="cta-card border-0 shadow-lg">
                 <div className="cta-card-body p-5">
-                  <h2 className="cta-title mb-3">Comece sua pesquisa hoje mesmo!</h2>
+                  <h2 className="cta-title mb-3">Faça seu pedido agora mesmo!</h2>
                   <p className="cta-description mb-4">
-                    Acesse o sistema de revistas da Editora Pasteur e descubra artigos científicos de qualidade.
+                    Ao realizar o seu pedido, um vendedor entrará em contato com você para finalizar a compra.
                   </p>
                   <div className="cta-buttons">
                     <a 
                       href="/auth/sign-up" 
-                      className="btn btn-primary btn-lg"
+                      className="btn btn-warning btn-lg"
                     >
-                      <i className="fas fa-rocket me-2"></i>
-                      Começar Agora
+                      <i className="fas fa-shopping-cart me-2"></i>
+                      Fazer Pedido
                     </a>
                   </div>
                 </div>
@@ -218,7 +168,7 @@ function LandingPage() {
           <Row className="text-center">
             <Col>
               <p className="footer-text mb-0">
-                © {currentYear} Editora Pasteur. Todos os direitos reservados.
+                © {currentYear} MSTI - Maciel Soluções em TI.
               </p>
             </Col>
           </Row>
@@ -227,5 +177,4 @@ function LandingPage() {
     </div>
   )
 }
-
 export default LandingPage

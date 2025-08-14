@@ -25,7 +25,7 @@ function LandingHeader() {
           <Navbar.Brand href="/" className="me-4">
             <Image
               src={logoDark}
-              alt="Editora Pasteur"
+              alt="Refrigeracao Teixeira"
               width={150}
               height={40}
               className="d-inline-block align-top"

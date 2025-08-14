@@ -20,7 +20,7 @@ export async function GET(
       </defs>
       <rect width="100%" height="100%" fill="url(#grad)"/>
       <text x="50%" y="45%" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle" font-weight="bold">
-        Editora Pasteur
+        Refrigeracao Teixeira
       </text>
       <text x="50%" y="60%" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle">
         Sistema de Revistas Científicas

@@ -7,48 +7,77 @@ export async function GET(
   const token = process.env.TINY_API_TOKEN;
   const id = params.id;
 
-  const formData = new URLSearchParams();
-  formData.append("token", token || "");
-  formData.append("id", id);
-  formData.append("formato", "json");
+  if (!token) {
+    return NextResponse.json(
+      { erro: "Token da API não configurado" },
+      { status: 500 }
+    );
+  }
+
+  const paramsBody = new URLSearchParams();
+  paramsBody.set("token", token);
+  paramsBody.set("id", id);
+  paramsBody.set("formato", "JSON");
 
   try {
     const res = await fetch("https://api.tiny.com.br/api2/produto.obter.php", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formData.toString(),
+      headers: { 'Accept': 'application/json' },
+      body: paramsBody,
     });
 
-    const text = await res.text();
-    console.log("Retorno do Tiny:", text);
+    if (!res.ok) {
+      throw new Error(`Erro na API: ${res.status}`);
+    }
 
-    const json = JSON.parse(text);
+    const json = await res.json();
     const produto = json?.retorno?.produto;
 
     if (!produto) {
       return NextResponse.json(
-        { erro: "Produto não encontrado", raw: json },
+        { erro: "Produto não encontrado" },
         { status: 404 }
       );
     }
 
-    // Tenta buscar imagens nas duas listas
-    const imagensAnexos = produto.anexos?.map((a: any) => a.anexo) || [];
-    const imagensExternas =
-      produto.imagens_externas?.map(
-        (i: any) => i.imagem_externa?.url
-      ) || [];
+    // Busca a primeira imagem dos anexos
+    const primeiraImagem = produto.anexos && produto.anexos.length > 0 
+      ? produto.anexos[0].anexo 
+      : null;
 
-    const todasImagens = [...imagensAnexos, ...imagensExternas];
-    const primeiraImagem = todasImagens.length > 0 ? todasImagens[0] : null;
+    // Processa a categoria para breadcrumb
+    const categorias = produto.categoria 
+      ? produto.categoria.split(" >> ").filter((cat: string) => cat.trim())
+      : [];
 
     return NextResponse.json({
       id: produto.id,
       nome: produto.nome,
+      codigo: produto.codigo,
+      unidade: produto.unidade,
       preco: produto.preco,
-      estoqueAtual: produto.estoqueAtual,
-      descricao: produto.descricao,
+      precoPromocional: produto.preco_promocional,
+      precoCusto: produto.preco_custo,
+      ncm: produto.ncm,
+      gtin: produto.gtin,
+      categoria: produto.categoria,
+      categorias: categorias,
+      marca: produto.marca,
+      descricao: produto.descricao_complementar,
+      garantia: produto.garantia,
+      pesoLiquido: produto.peso_liquido,
+      pesoBruto: produto.peso_bruto,
+      estoqueMinimo: produto.estoque_minimo,
+      estoqueMaximo: produto.estoque_maximo,
+      estoqueAtual: produto.estoqueAtual || 0,
+      situacao: produto.situacao,
+      fornecedor: {
+        nome: produto.nome_fornecedor,
+        codigo: produto.codigo_fornecedor
+      },
       imagem: primeiraImagem,
+      anexos: produto.anexos || [],
+      imagensExternas: produto.imagens_externas || []
     });
   } catch (error) {
     console.error("Erro ao buscar produto:", error);

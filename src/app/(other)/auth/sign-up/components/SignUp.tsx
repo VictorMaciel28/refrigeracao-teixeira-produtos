@@ -44,24 +44,24 @@ const SignUp = () => {
                     <Image src={LogoLight} height={28} alt="logo light" />
                   </Link>
                 </div>
-                <h2 className="fw-bold text-uppercase text-center fs-18">Free Account</h2>
-                <p className="text-muted text-center mt-1 mb-4">New to our platform? Sign up now! It only takes a minute.</p>
+                <h2 className="fw-bold text-uppercase text-center fs-18">Refrigeração Teixeira</h2>
+                <p className="text-muted text-center mt-1 mb-4">Novo em nossa plataforma? Cadastre-se agora! É só um minuto.</p>
                 <div className="px-4">
                   <form onSubmit={handleSubmit(() => {})} className="authentication-form">
                     <div className="mb-3">
                       <TextFormInput
                         control={control}
                         name="name"
-                        placeholder="Enter your Name"
+                        placeholder="Digite seu nome"
                         className="bg-light bg-opacity-50 border-light py-2"
-                        label="Name"
+                        label="Nome"
                       />
                     </div>
                     <div className="mb-3">
                       <TextFormInput
                         control={control}
                         name="email"
-                        placeholder="Enter your email"
+                        placeholder="Digite seu email"
                         className="bg-light bg-opacity-50 border-light py-2"
                         label="Email"
                       />
@@ -70,7 +70,7 @@ const SignUp = () => {
                       <TextFormInput
                         control={control}
                         name="password"
-                        placeholder="Enter your password"
+                        placeholder="Digite sua senha"
                         className="bg-light bg-opacity-50 border-light py-2"
                         label="Password"
                       />
@@ -79,17 +79,17 @@ const SignUp = () => {
                       <div className="form-check">
                         <input type="checkbox" className="form-check-input" id="checkbox-signin" />
                         <label className="form-check-label" htmlFor="checkbox-signin">
-                          I accept Terms and Condition
+                          Aceito os Termos e Condições
                         </label>
                       </div>
                     </div>
                     <div className="mb-1 text-center d-grid">
                       <button className="btn btn-danger py-2" type="submit">
-                        Create Account
+                        Criar Conta
                       </button>
                     </div>
                   </form>
-                  <p className="mt-3 fw-semibold no-span">OR sign with</p>
+                  <p className="mt-3 fw-semibold no-span">OU cadastre-se com</p>
                   <div className="text-center">
                     <Button variant="outline-light" className="shadow-none">
                       <IconifyIcon icon="bxl:google" className="fs-20" />
@@ -107,9 +107,9 @@ const SignUp = () => {
               </CardBody>
             </Card>
             <p className="mb-0 text-center text-white">
-              I already have an account{' '}
+              Já tenho uma conta{' '}
               <Link href="/auth/sign-in" className="text-reset text-unline-dashed fw-bold ms-1">
-                Sign In
+                Entrar
               </Link>
             </p>
           </Col>

@@ -1,35 +1,72 @@
 import { NextResponse } from "next/server";
 
-export async function POST(
-  request: Request,
-  context: { params: { id: string } }
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
-  const API_TOKEN = process.env.TINY_API_TOKEN;
+  const token = process.env.TINY_API_TOKEN;
+  const id = params.id;
 
-  const body = new URLSearchParams();
-  body.append("token", API_TOKEN || "");
-  body.append("id", id);
-  body.append("formato", "json");
+  if (!token) {
+    return NextResponse.json(
+      { erro: "Token da API não configurado" },
+      { status: 500 }
+    );
+  }
+
+  const paramsBody = new URLSearchParams();
+  paramsBody.set("token", token);
+  paramsBody.set("id", id);
+  paramsBody.set("formato", "JSON");
 
   try {
-    const res = await fetch(
-      "https://api.tiny.com.br/api2/produto.obter.estoque.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: body.toString(),
-        cache: "no-store",
-      }
+    const res = await fetch("https://api.tiny.com.br/api2/produto.obter.estoque.php", {
+      method: "POST",
+      headers: { 'Accept': 'application/json' },
+      body: paramsBody,
+    });
+
+    if (!res.ok) {
+      throw new Error(`Erro na API: ${res.status}`);
+    }
+
+    const json = await res.json();
+    const produtoEstoque = json?.retorno?.produto;
+
+    if (!produtoEstoque) {
+      return NextResponse.json(
+        { erro: "Estoque do produto não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    // Calcula o total de estoque
+    const depositos = produtoEstoque.depositos || [];
+    const totalEstoque = depositos.reduce((total: number, dep: any) => {
+      const saldo = dep.deposito.saldo || 0;
+      return total + (saldo > 0 ? saldo : 0); // Soma apenas saldos positivos
+    }, 0);
+
+    // Filtra depósitos com estoque positivo para exibição
+    const depositosComEstoque = depositos.filter((dep: any) => 
+      dep.deposito.saldo > 0
     );
 
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (err) {
+    return NextResponse.json({
+      id: produtoEstoque.id,
+      nome: produtoEstoque.nome,
+      codigo: produtoEstoque.codigo,
+      unidade: produtoEstoque.unidade,
+      saldo: produtoEstoque.saldo,
+      saldoReservado: produtoEstoque.saldoReservado,
+      totalEstoque: totalEstoque,
+      depositos: depositos,
+      depositosComEstoque: depositosComEstoque
+    });
+  } catch (error) {
+    console.error("Erro ao buscar estoque:", error);
     return NextResponse.json(
-      { error: "Erro interno ao buscar estoque", details: String(err) },
+      { erro: "Falha ao buscar informações de estoque" },
       { status: 500 }
     );
   }
