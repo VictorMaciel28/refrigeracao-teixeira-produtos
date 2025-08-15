@@ -20,7 +20,7 @@ function LandingPage() {
   const router = useRouter();
   // Função para carregar produtos
   useEffect(() => {
-    // router.push("/produtos");
+    router.push("/produtos");
     async function carregarProdutos() {
       setLoading(true);
       try {
